@@ -1,6 +1,6 @@
 
 'use server';
-import type { Task } from '@/types';
+import type { Task, UserRole } from '@/types';
 import { db } from '@/lib/firebase'; // Import Firestore instance
 import {
   collection,
@@ -12,7 +12,9 @@ import {
   query,
   orderBy,
   limit,
-  serverTimestamp
+  serverTimestamp,
+  FieldValue,
+  // deleteField, // Import if you want to completely remove fields
 } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
 
@@ -33,8 +35,7 @@ export async function getTasks(): Promise<Task[]> {
   console.log("Server Action: getTasks called. Fetching from Firestore.");
   try {
     const tasksCollection = collection(db, TASKS_COLLECTION);
-    // Optionally, order by creation date or due date
-    const q = query(tasksCollection, orderBy('createdAt', 'desc'), limit(50)); // Get latest 50 tasks
+    const q = query(tasksCollection, orderBy('createdAt', 'desc'), limit(50));
     const querySnapshot = await getDocs(q);
     const tasks = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
@@ -46,42 +47,56 @@ export async function getTasks(): Promise<Task[]> {
     return tasks;
   } catch (error) {
     console.error("Error fetching tasks from Firestore:", error);
-    // Consider how to handle this error in the UI. For now, returning empty.
     return [];
   }
+}
+
+// Interface for the data structure being sent to Firestore for new tasks
+interface CreateTaskFirestorePayload {
+  title: string;
+  description: string;
+  status: 'not-started' | 'in-progress' | 'completed' | 'pending-verification';
+  assignedTo?: string;
+  assigneeRole?: UserRole;
+  dueDate?: Timestamp;
+  completedAt?: Timestamp;
+  completionPhotoUrl?: string;
+  comments?: string;
+  sitePlanZone?: string;
+  createdAt: FieldValue;
+  updatedAt: FieldValue;
 }
 
 export async function createTask(taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Promise<Task> {
   console.log("Server Action: createTask called with data:", taskData);
   try {
     const tasksCollection = collection(db, TASKS_COLLECTION);
-    const newTaskData: any = {
-      ...taskData,
+    
+    const { dueDate, completedAt, ...restOfTaskData } = taskData;
+
+    const newTaskDataForFirestore: CreateTaskFirestorePayload = {
+      ...restOfTaskData,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     };
 
-    if (taskData.dueDate) {
-      newTaskData.dueDate = Timestamp.fromDate(new Date(taskData.dueDate));
+    if (dueDate) {
+      newTaskDataForFirestore.dueDate = Timestamp.fromDate(new Date(dueDate));
     }
-    if (taskData.completedAt) {
-      newTaskData.completedAt = Timestamp.fromDate(new Date(taskData.completedAt));
+    if (completedAt) { // Allows creating a task that is already completed
+      newTaskDataForFirestore.completedAt = Timestamp.fromDate(new Date(completedAt));
     }
 
-
-    const docRef = await addDoc(tasksCollection, newTaskData);
+    const docRef = await addDoc(tasksCollection, newTaskDataForFirestore);
     
-    revalidatePath('/'); // Revalidate the home page to show the new task
+    revalidatePath('/');
 
-    // For returning the created task, we'd ideally fetch it or construct it carefully.
-    // Firestore serverTimestamp() resolves on the server, so we can't immediately get the string.
-    // For simplicity, we'll return the input data with a placeholder ID and current date strings.
-    // A more robust solution might involve fetching the doc again, or structuring the client to handle optimistic updates.
+    // Return a representation of the task; server-generated timestamps are approximated.
     return {
-      ...taskData,
+      ...taskData, // This includes original string dates if they were part of input
       id: docRef.id,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(), // Approximation
+      updatedAt: new Date().toISOString(), // Approximation
     } as Task;
 
   } catch (error) {
@@ -90,32 +105,45 @@ export async function createTask(taskData: Omit<Task, 'id' | 'createdAt' | 'upda
   }
 }
 
+// Interface for the data structure used to update tasks in Firestore
+interface UpdateTaskFirestorePayload {
+  status: Task['status'];
+  updatedAt: FieldValue;
+  completedAt?: FieldValue | null; // Can be serverTimestamp() or null
+  // other fields can be added here if they are updatable
+}
+
 export async function updateTaskStatus(taskId: string, status: Task['status']): Promise<Task | null> {
   console.log("Server Action: updateTaskStatus called for task:", taskId, "to status:", status);
   try {
     const taskDocRef = doc(db, TASKS_COLLECTION, taskId);
-    const updateData: any = {
+    
+    const updateDataForFirestore: UpdateTaskFirestorePayload = {
       status: status,
       updatedAt: serverTimestamp(),
     };
 
     if (status === 'completed') {
-      updateData.completedAt = serverTimestamp();
+      updateDataForFirestore.completedAt = serverTimestamp();
     } else {
-      // If moving away from completed, you might want to clear completedAt
-      // updateData.completedAt = null; // or deleteField() if you want to remove it
+      // If the task is being moved to any status other than 'completed',
+      // set completedAt to null. This handles reopening tasks or correcting mistakes.
+      updateDataForFirestore.completedAt = null; 
+      // If you wanted to completely remove the field, you would use:
+      // updateDataForFirestore.completedAt = deleteField(); 
+      // But null is often sufficient and simpler.
     }
     
-    await updateDoc(taskDocRef, updateData);
-    revalidatePath('/'); // Revalidate the home page
+    await updateDoc(taskDocRef, updateDataForFirestore as any); // Using 'as any' for updateDoc with potentially 'null' values for FieldValue types
+    revalidatePath('/'); 
 
-    // To return the updated task, you'd typically fetch it again.
-    // For now, we'll return a simplified object.
+    // For returning the updated task, ideally, fetch it again.
+    // Returning a simplified object for now.
     // const updatedDoc = await getDoc(taskDocRef);
     // if (updatedDoc.exists()) {
     //   return { ...convertTimestamps(updatedDoc.data()), id: updatedDoc.id } as Task;
     // }
-    return { id: taskId, status } as Partial<Task> as Task; // Simplified return for now
+    return { id: taskId, status } as Partial<Task> as Task; // Simplified return
   } catch (error) {
     console.error("Error updating task status in Firestore:", error);
     throw new Error('Failed to update task status in Firestore.');
