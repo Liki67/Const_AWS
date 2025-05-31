@@ -1,39 +1,123 @@
+
 'use server';
 import type { Task } from '@/types';
-import { mockTasks as allMockTasks } from '@/lib/mock-data'; // Renaming to avoid conflict
+import { db } from '@/lib/firebase'; // Import Firestore instance
+import {
+  collection,
+  getDocs,
+  addDoc,
+  doc,
+  updateDoc,
+  Timestamp,
+  query,
+  orderBy,
+  limit,
+  serverTimestamp
+} from 'firebase/firestore';
+import { revalidatePath } from 'next/cache';
 
-// TODO: Replace this with actual Firestore database calls
+const TASKS_COLLECTION = 'tasks';
+
+// Helper function to convert Firestore Timestamps to ISO strings
+const convertTimestamps = (data: any): any => {
+  const result: any = { ...data };
+  for (const key in result) {
+    if (result[key] instanceof Timestamp) {
+      result[key] = result[key].toDate().toISOString();
+    }
+  }
+  return result;
+};
 
 export async function getTasks(): Promise<Task[]> {
-  // Simulate fetching tasks from a database
-  // In a real application, this would interact with Firestore
-  console.log("Server Action: getTasks called. Returning mock data for now.");
-  // Returning a copy to prevent accidental mutation of the mock source if it were more complex
-  return Promise.resolve(JSON.parse(JSON.stringify(allMockTasks))); 
+  console.log("Server Action: getTasks called. Fetching from Firestore.");
+  try {
+    const tasksCollection = collection(db, TASKS_COLLECTION);
+    // Optionally, order by creation date or due date
+    const q = query(tasksCollection, orderBy('createdAt', 'desc'), limit(50)); // Get latest 50 tasks
+    const querySnapshot = await getDocs(q);
+    const tasks = querySnapshot.docs.map(docSnap => {
+      const data = docSnap.data();
+      return {
+        ...convertTimestamps(data),
+        id: docSnap.id,
+      } as Task;
+    });
+    return tasks;
+  } catch (error) {
+    console.error("Error fetching tasks from Firestore:", error);
+    // Consider how to handle this error in the UI. For now, returning empty.
+    return [];
+  }
 }
 
-export async function createTask(taskData: Omit<Task, 'id'>): Promise<Task> {
-  // Simulate creating a task in a database
+export async function createTask(taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Promise<Task> {
   console.log("Server Action: createTask called with data:", taskData);
-  const newTask: Task = {
-    ...taskData,
-    id: `task-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`, // Generate a pseudo-unique ID
-  };
-  // In a real app, you'd add this to Firestore and then it might be re-fetched or added to a local cache.
-  // For now, this won't update the client-side list automatically without further changes.
-  allMockTasks.push(newTask); // This mutates the server-side mock data for demo, not ideal for real apps
-  return Promise.resolve(newTask);
+  try {
+    const tasksCollection = collection(db, TASKS_COLLECTION);
+    const newTaskData: any = {
+      ...taskData,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    };
+
+    if (taskData.dueDate) {
+      newTaskData.dueDate = Timestamp.fromDate(new Date(taskData.dueDate));
+    }
+    if (taskData.completedAt) {
+      newTaskData.completedAt = Timestamp.fromDate(new Date(taskData.completedAt));
+    }
+
+
+    const docRef = await addDoc(tasksCollection, newTaskData);
+    
+    revalidatePath('/'); // Revalidate the home page to show the new task
+
+    // For returning the created task, we'd ideally fetch it or construct it carefully.
+    // Firestore serverTimestamp() resolves on the server, so we can't immediately get the string.
+    // For simplicity, we'll return the input data with a placeholder ID and current date strings.
+    // A more robust solution might involve fetching the doc again, or structuring the client to handle optimistic updates.
+    return {
+      ...taskData,
+      id: docRef.id,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } as Task;
+
+  } catch (error) {
+    console.error("Error creating task in Firestore:", error);
+    throw new Error('Failed to create task in Firestore.');
+  }
 }
 
 export async function updateTaskStatus(taskId: string, status: Task['status']): Promise<Task | null> {
   console.log("Server Action: updateTaskStatus called for task:", taskId, "to status:", status);
-  const taskIndex = allMockTasks.findIndex(t => t.id === taskId);
-  if (taskIndex !== -1) {
-    allMockTasks[taskIndex]!.status = status;
+  try {
+    const taskDocRef = doc(db, TASKS_COLLECTION, taskId);
+    const updateData: any = {
+      status: status,
+      updatedAt: serverTimestamp(),
+    };
+
     if (status === 'completed') {
-        allMockTasks[taskIndex]!.completedAt = new Date().toISOString();
+      updateData.completedAt = serverTimestamp();
+    } else {
+      // If moving away from completed, you might want to clear completedAt
+      // updateData.completedAt = null; // or deleteField() if you want to remove it
     }
-    return Promise.resolve(JSON.parse(JSON.stringify(allMockTasks[taskIndex])));
+    
+    await updateDoc(taskDocRef, updateData);
+    revalidatePath('/'); // Revalidate the home page
+
+    // To return the updated task, you'd typically fetch it again.
+    // For now, we'll return a simplified object.
+    // const updatedDoc = await getDoc(taskDocRef);
+    // if (updatedDoc.exists()) {
+    //   return { ...convertTimestamps(updatedDoc.data()), id: updatedDoc.id } as Task;
+    // }
+    return { id: taskId, status } as Partial<Task> as Task; // Simplified return for now
+  } catch (error) {
+    console.error("Error updating task status in Firestore:", error);
+    throw new Error('Failed to update task status in Firestore.');
   }
-  return Promise.resolve(null);
 }

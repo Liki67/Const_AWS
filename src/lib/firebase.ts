@@ -1,45 +1,32 @@
+
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-// For example, getFirestore from "firebase/firestore" or getAuth from "firebase/auth"
+import { initializeApp, getApp, getApps } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+// import { getAnalytics } from "firebase/analytics"; // Uncomment if you need analytics
 
 // Your web app's Firebase configuration
-// IMPORTANT: Replace this with your actual Firebase project configuration!
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// IMPORTANT: Replace with your actual Firebase project configuration!
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID" // Optional: For Google Analytics
+  apiKey: "AIzaSyBdwE237VZUsRZmBFhS6XYZBMT3wnIr97Y", // REPLACE WITH YOURS
+  authDomain: "const-connect.firebaseapp.com", // REPLACE WITH YOURS
+  projectId: "const-connect", // REPLACE WITH YOURS
+  storageBucket: "const-connect.firebasestorage.app", // REPLACE WITH YOURS
+  messagingSenderId: "246672840111", // REPLACE WITH YOURS
+  appId: "1:246672840111:web:0b3c50485f7bb55b4b0b5a", // REPLACE WITH YOURS
+  measurementId: "G-HLPZY2D1DS" // REPLACE WITH YOURS (Optional)
 };
 
 // Initialize Firebase
-let app: FirebaseApp;
+let app;
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
 } else {
-  app = getApps()[0]!;
+  app = getApp();
 }
 
-// Example: Export Firestore instance if you were using it
-// import { getFirestore } from "firebase/firestore";
-// export const db = getFirestore(app);
+// const analytics = getAnalytics(app); // Uncomment if you need analytics and have configured it
 
-// Example: Export Auth instance if you were using it
-// import { getAuth } from "firebase/auth";
-// export const auth = getAuth(app);
+const db = getFirestore(app);
 
-export { app as firebaseApp };
-
-// After setting up your Firebase project in the Firebase console (https://console.firebase.google.com/):
-// 1. Go to Project settings > General.
-// 2. Under "Your apps", click the "Web" icon (</>) if you haven't registered a web app yet, or select your existing web app.
-// 3. Find the "SDK setup and configuration" section and select "Config".
-// 4. Copy the firebaseConfig object and paste it above, replacing the placeholder values.
-// 5. Ensure you have installed the necessary Firebase SDKs (e.g., `npm install firebase`).
-// 6. Add your GOOGLE_API_KEY to the .env file at the root of your project for Genkit AI features.
-//    Example .env file content:
-//    GOOGLE_API_KEY=your_google_api_key_here
+export { app, db };

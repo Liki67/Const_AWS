@@ -1,3 +1,4 @@
+
 export type UserRole = 'engineer' | 'contractor' | 'worker';
 
 export interface Task {
@@ -9,6 +10,8 @@ export interface Task {
   assigneeRole?: UserRole;
   dueDate?: string; // ISO Date string
   completedAt?: string; // ISO Date string
+  createdAt?: string; // ISO Date string
+  updatedAt?: string; // ISO Date string
   completionPhotoUrl?: string;
   comments?: string;
   sitePlanZone?: string; // ID or coordinates for site plan
