@@ -1,3 +1,4 @@
+
 import type { Task, SitePlan, Material } from '@/types';
 import { TaskList } from '@/components/tasks/task-list';
 import { SitePlanDisplay } from '@/components/site-plan/site-plan-display';
@@ -7,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { PackageSearch, Download, Info } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from '@/hooks/use-toast';
 
 interface ContractorDashboardProps {
   tasks: Task[];
@@ -17,6 +19,15 @@ interface ContractorDashboardProps {
 
 export function ContractorDashboard({ tasks, sitePlans, materials, activeSection }: ContractorDashboardProps) {
   const currentSitePlan = sitePlans[0] || null;
+  const { toast } = useToast();
+
+  const handleQuickAction = (action: string) => {
+    toast({
+      title: "Action Triggered",
+      description: `${action} functionality would be implemented here.`,
+    });
+    console.log(`${action} clicked`);
+  };
 
   const renderSection = () => {
     switch (activeSection) {
@@ -29,8 +40,8 @@ export function ContractorDashboard({ tasks, sitePlans, materials, activeSection
                 <CardDescription>Common contractor tasks.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full" variant="outline"><PackageSearch className="mr-2 h-4 w-4"/> Request Materials</Button>
-                <Button className="w-full" variant="outline"><Download className="mr-2 h-4 w-4"/> Download Inventory Report</Button>
+                <Button className="w-full" variant="default" onClick={() => handleQuickAction('Request Materials')}><PackageSearch className="mr-2 h-4 w-4"/> Request Materials</Button>
+                <Button className="w-full" variant="default" onClick={() => handleQuickAction('Download Inventory Report')}><Download className="mr-2 h-4 w-4"/> Download Inventory Report</Button>
               </CardContent>
             </Card>
             <TaskList tasks={tasks} title="Your Assigned Tasks" currentRole="contractor" />

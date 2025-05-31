@@ -1,3 +1,4 @@
+
 import type { Task, SitePlan, Material } from '@/types';
 import { TaskList } from '@/components/tasks/task-list';
 import { SitePlanDisplay } from '@/components/site-plan/site-plan-display';
@@ -8,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { PackagePlus, Download, MessageSquarePlus, Info } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from '@/hooks/use-toast';
 
 interface EngineerDashboardProps {
   tasks: Task[];
@@ -18,6 +20,15 @@ interface EngineerDashboardProps {
 
 export function EngineerDashboard({ tasks, sitePlans, materials, activeSection }: EngineerDashboardProps) {
   const currentSitePlan = sitePlans[0] || null;
+  const { toast } = useToast();
+
+  const handleQuickAction = (action: string) => {
+    toast({
+      title: "Action Triggered",
+      description: `${action} functionality would be implemented here.`,
+    });
+    console.log(`${action} clicked`);
+  };
 
   const renderSection = () => {
     switch (activeSection) {
@@ -33,9 +44,9 @@ export function EngineerDashboard({ tasks, sitePlans, materials, activeSection }
                 <CardDescription>Common engineer tasks.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full" variant="outline"><MessageSquarePlus className="mr-2 h-4 w-4"/> Assign Task</Button>
-                <Button className="w-full" variant="outline"><PackagePlus className="mr-2 h-4 w-4"/> Manage Materials</Button>
-                <Button className="w-full" variant="outline"><Download className="mr-2 h-4 w-4"/> Download Reports</Button>
+                <Button className="w-full" variant="default" onClick={() => handleQuickAction('Assign Task')}><MessageSquarePlus className="mr-2 h-4 w-4"/> Assign Task</Button>
+                <Button className="w-full" variant="default" onClick={() => handleQuickAction('Manage Materials')}><PackagePlus className="mr-2 h-4 w-4"/> Manage Materials</Button>
+                <Button className="w-full" variant="default" onClick={() => handleQuickAction('Download Reports')}><Download className="mr-2 h-4 w-4"/> Download Reports</Button>
               </CardContent>
             </Card>
              <div className="lg:col-span-2 xl:col-span-2">

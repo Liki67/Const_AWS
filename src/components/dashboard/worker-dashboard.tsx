@@ -1,3 +1,4 @@
+
 import type { Task, SitePlan } from '@/types';
 import { TaskList } from '@/components/tasks/task-list';
 import { SitePlanDisplay } from '@/components/site-plan/site-plan-display';
@@ -6,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Camera, PackagePlusIcon, Info } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from '@/hooks/use-toast';
 
 interface WorkerDashboardProps {
   tasks: Task[];
@@ -14,7 +16,16 @@ interface WorkerDashboardProps {
 }
 
 export function WorkerDashboard({ tasks, sitePlans, activeSection }: WorkerDashboardProps) {
-  const currentSitePlan = sitePlans[0] || null; // Simplified: show first plan, needs logic for relevant plan section
+  const currentSitePlan = sitePlans[0] || null; 
+  const { toast } = useToast();
+
+  const handleQuickAction = (action: string) => {
+    toast({
+      title: "Action Triggered",
+      description: `${action} functionality would be implemented here.`,
+    });
+    console.log(`${action} clicked`);
+  };
 
   const renderSection = () => {
     switch (activeSection) {
@@ -27,8 +38,8 @@ export function WorkerDashboard({ tasks, sitePlans, activeSection }: WorkerDashb
                 <CardDescription>Your daily tasks and tools.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full" variant="outline"><Camera className="mr-2 h-4 w-4"/> Upload Completion Photo</Button>
-                <Button className="w-full" variant="outline"><PackagePlusIcon className="mr-2 h-4 w-4"/> Raise Material Request</Button>
+                <Button className="w-full" variant="default" onClick={() => handleQuickAction('Upload Completion Photo')}><Camera className="mr-2 h-4 w-4"/> Upload Completion Photo</Button>
+                <Button className="w-full" variant="default" onClick={() => handleQuickAction('Raise Material Request')}><PackagePlusIcon className="mr-2 h-4 w-4"/> Raise Material Request</Button>
               </CardContent>
             </Card>
             <TaskList tasks={tasks} title="Your Daily Tasks" currentRole="worker" />
@@ -37,7 +48,6 @@ export function WorkerDashboard({ tasks, sitePlans, activeSection }: WorkerDashb
       case '#tasks':
         return <TaskList tasks={tasks} title="Your Task List" currentRole="worker" />;
       case '#site-plans':
-        // Workers should see only relevant sections. This is a simplified version.
         return currentSitePlan ? <SitePlanDisplay sitePlan={currentSitePlan} tasks={tasks} currentRole="worker" /> : <p>No site plan sections relevant to your tasks.</p>;
       case '#ai-comments':
         return <AiCommentRouter />;
