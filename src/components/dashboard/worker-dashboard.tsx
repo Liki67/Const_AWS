@@ -4,7 +4,8 @@ import { SitePlanDisplay } from '@/components/site-plan/site-plan-display';
 import { AiCommentRouter } from '@/components/comments/ai-comment-router';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Camera, PackagePlusIcon } from 'lucide-react';
+import { Camera, PackagePlusIcon, Info } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface WorkerDashboardProps {
   tasks: Task[];
@@ -47,5 +48,16 @@ export function WorkerDashboard({ tasks, sitePlans, activeSection }: WorkerDashb
     }
   };
 
-  return <div className="space-y-6">{renderSection()}</div>;
+  return (
+    <div className="space-y-6">
+      <Alert variant="default" className="mb-4">
+        <Info className="h-4 w-4" />
+        <AlertTitle>Using Mock Data</AlertTitle>
+        <AlertDescription>
+          Please note: The data displayed in this dashboard (tasks, site plans, etc.) is currently sample data for demonstration purposes. Changes are not saved persistently as no backend database is configured yet.
+        </AlertDescription>
+      </Alert>
+      {renderSection()}
+    </div>
+  );
 }

@@ -5,7 +5,8 @@ import { TaskCalendar } from '@/components/calendar/task-calendar';
 import { AiCommentRouter } from '@/components/comments/ai-comment-router';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PackageSearch, Download } from 'lucide-react';
+import { PackageSearch, Download, Info } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ContractorDashboardProps {
   tasks: Task[];
@@ -52,5 +53,16 @@ export function ContractorDashboard({ tasks, sitePlans, materials, activeSection
     }
   };
   
-  return <div className="space-y-6">{renderSection()}</div>;
+  return (
+    <div className="space-y-6">
+      <Alert variant="default" className="mb-4">
+        <Info className="h-4 w-4" />
+        <AlertTitle>Using Mock Data</AlertTitle>
+        <AlertDescription>
+          Please note: The data displayed in this dashboard (tasks, site plans, materials, etc.) is currently sample data for demonstration purposes. Changes are not saved persistently as no backend database is configured yet.
+        </AlertDescription>
+      </Alert>
+      {renderSection()}
+    </div>
+  );
 }
