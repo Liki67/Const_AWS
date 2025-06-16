@@ -54,9 +54,23 @@ This project is **deployed entirely on AWS Cloud**, utilizing:
 ---
 
 ## 📁 Project Structure
+<pre>
 Const_AWS/
-├── client/              # React Frontend
-├── server/              # Node/Express Backend
-├── .env.example         # Sample environment config
-├── Dockerfile           # For containerization (optional)
-└── README.md
+├── client/               # React Frontend
+│   ├── public/
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       └── App.js
+│
+├── server/               # Express Backend
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   └── index.js
+│
+├── .env.example          # Sample environment configuration
+├── Dockerfile            # Docker config (if using containers)
+├── README.md
+└── package.json
+</pre>
