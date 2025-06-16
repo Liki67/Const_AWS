@@ -38,11 +38,11 @@ Const_AWS is a full-stack Construction Site Management Platform deployed on Amaz
 
 | Layer       | Tech Used                            |
 |-------------|--------------------------------------|
+|Cloud       | AWS EC2, S3, RDS / MongoDB Atlas      |
 | Frontend    | React.js, Tailwind CSS               |
 | Backend     | Node.js, Express.js                  |
 | Database    | MongoDB (with Mongoose)              |
 | Authentication | JWT, Bcrypt                       |
-| Cloud       | AWS EC2, S3, RDS / MongoDB Atlas     |
 | DevOps      | GitHub Actions, NGINX, PM2           |
 | AI Features | LangChain, Gemini API *(planned)*    |
 
