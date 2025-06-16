@@ -49,3 +49,9 @@ Const_AWS is a full-stack Construction Site Management Platform deployed on Amaz
 ---
 
 ## 📁 Project Structure
+Const_AWS/
+├── client/              # React Frontend
+├── server/              # Node/Express Backend
+├── .env.example         # Sample environment config
+├── Dockerfile           # For containerization (optional)
+└── README.md
