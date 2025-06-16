@@ -6,6 +6,14 @@ Const_AWS is a full-stack Construction Site Management Platform deployed on Amaz
 
 ##  Features
 
+### ☁️ AWS Deployment
+- **EC2** for backend hosting  
+- **S3** for blueprint and asset storage  
+- **RDS** / **MongoDB Atlas** for database  
+- **CloudWatch** for monitoring  
+- **Route 53** & **SSL** for custom domain and HTTPS
+
+
 ###  Role-Based Access Control (RBAC)
 - Separate interfaces for Engineers, Contractors, and Workers.
 - Secure login & session handling.
@@ -21,6 +29,8 @@ Const_AWS is a full-stack Construction Site Management Platform deployed on Amaz
 ###  Task & Project Tracking
 - Assign tasks to teams or individuals.
 - Visual project progress updates with Gantt-style tracking.
+- <img width="1417" alt="Screenshot 2025-06-16 at 10 07 51 PM" src="https://github.com/user-attachments/assets/96ad1775-c3a8-41ab-929f-28e810310c88" />
+
 
 ###  Inventory Management
 - Track materials, orders, and deliveries.
@@ -28,13 +38,6 @@ Const_AWS is a full-stack Construction Site Management Platform deployed on Amaz
 
 ###  AI-Powered RAG Chatbot *(Coming Soon)*
 - Query construction standards, safety guidelines, and project-specific data using a Retrieval-Augmented Generation (RAG) chatbot powered by LangChain & Gemini.
-
-### ☁️ AWS Deployment
-- **EC2** for backend hosting  
-- **S3** for blueprint and asset storage  
-- **RDS** / **MongoDB Atlas** for database  
-- **CloudWatch** for monitoring  
-- **Route 53** & **SSL** for custom domain and HTTPS
 
 ---
 
