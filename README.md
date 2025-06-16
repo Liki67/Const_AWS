@@ -1,18 +1,16 @@
 # 🏗️ Const_AWS – Construction Management Platform on AWS
 
-Const_AWS is a full-stack Construction Site Management Platform deployed on Amazon Web Services (AWS). It streamlines operations for engineers, contractors, and workers through centralized dashboards, task management, blueprint annotations, inventory tracking, and real-time collaboration. The app is designed for scalability, security, and performance, leveraging cloud infrastructure and modern DevOps practices.
+Const_AWS** is a cloud-based full-stack Construction Management System designed to streamline site operations and enhance collaboration between engineers, contractors, and workers. Built as a **database-driven web application**, the platform provides role-based dashboards, blueprint annotations, task tracking, and inventory management — all integrated into a robust, scalable cloud architecture.
 
----
+This project is **deployed entirely on AWS Cloud**, utilizing:
+
+- ☁️ **EC2** for hosting the backend server  
+- ☁️ **S3** for storing blueprints and digital assets  
+- ☁️ **RDS / MongoDB Atlas** as the cloud database solution  
+- ☁️ **CloudWatch** for logging and monitoring  
+- ☁️ **Route 53 with SSL** for secure custom domain hosting  
 
 ##  Features
-
-### ☁️ AWS Deployment
-- **EC2** for backend hosting  
-- **S3** for blueprint and asset storage  
-- **RDS** / **MongoDB Atlas** for database  
-- **CloudWatch** for monitoring  
-- **Route 53** & **SSL** for custom domain and HTTPS
-
 
 ###  Role-Based Access Control (RBAC)
 - Separate interfaces for Engineers, Contractors, and Workers.
