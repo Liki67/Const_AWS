@@ -4,25 +4,29 @@ Const_AWS is a full-stack Construction Site Management Platform deployed on Amaz
 
 ---
 
-## 🚀 Features
+##  Features
 
-### ✅ Role-Based Access Control (RBAC)
+###  Role-Based Access Control (RBAC)
 - Separate interfaces for Engineers, Contractors, and Workers.
 - Secure login & session handling.
+- <img width="1411" alt="Screenshot 2025-06-16 at 10 06 51 PM" src="https://github.com/user-attachments/assets/2e284d0b-1078-49d5-9347-930f11c1e1f0" />
 
-### 📝 Blueprint Annotation
+
+###  Blueprint Annotation
 - Upload and annotate architectural blueprints.
 - Pin tasks, comments, and materials directly on site plans.
+- <img width="1415" alt="Screenshot 2025-06-16 at 10 07 26 PM" src="https://github.com/user-attachments/assets/6157fa6f-88d9-4be1-bf0e-a091e36f2f3d" />
 
-### 📋 Task & Project Tracking
+
+###  Task & Project Tracking
 - Assign tasks to teams or individuals.
 - Visual project progress updates with Gantt-style tracking.
 
-### 📦 Inventory Management
+###  Inventory Management
 - Track materials, orders, and deliveries.
 - Low-stock alerts and material usage logs.
 
-### 🧠 AI-Powered RAG Chatbot *(Coming Soon)*
+###  AI-Powered RAG Chatbot *(Coming Soon)*
 - Query construction standards, safety guidelines, and project-specific data using a Retrieval-Augmented Generation (RAG) chatbot powered by LangChain & Gemini.
 
 ### ☁️ AWS Deployment
